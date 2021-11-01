@@ -1,9 +1,13 @@
 const bcrypt = require("bcrypt");
 const express = require('express');
+require('dotenv').config();
+const jwt = require("jsonwebtoken");
 const app = express();
 const port = 3000;
 
 const users = [];
+
+// const key = require('crypto').randomBytes(16).toString('hex');
 
 app.get('/', (req, res) => {
     res.status(200).send("This is the homepage");
@@ -36,6 +40,25 @@ app.post('/sign_up', async (req, res) => {
 
     users.push({email, username, hashedPassword});
     res.send(users);
+});
+
+app.post('/login', async (req, res) => {
+    const {mail, password} = req.query;
+
+    for(user of users) {
+        if(user.email === mail) {
+            const isValid = await bcrypt.compare(password, user.hashedPassword);
+            if(isValid) {
+                console.log(process.env.SECRET_KEY);
+                const token = jwt.sign({mail, password}, process.env.SECRET_KEY, {expiresIn: '86400s'});
+                res.status(200).send(token);
+            } else {
+                res.status(400).send("Invalid password");
+            }
+        }
+    }
+
+    res.status(400).send("User not found");
 });
 
 app.listen(port, () => {
