@@ -13,7 +13,7 @@ app.get('/users', (req, res) => {
     res.status(200).send(users);
 });
 
-app.post('/sign_up', (req, res) => {
+app.post('/sign_up', async (req, res) => {
     
     const length = RegExp('(?=.{8,})');
     const password_regex = RegExp('(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9])');
