@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -31,7 +32,9 @@ app.post('/sign_up', (req, res) => {
         res.status(400).send("Password should contain both upper and lowercase characters, numbers and special characters");
     }
 
-    users.push({email, username, password});
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    users.push({email, username, hashedPassword});
     res.send(users);
 });
 
