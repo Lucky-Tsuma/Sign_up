@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -9,7 +10,7 @@ const password_caps = RegExp('(?=.*[A-Z])');
 const password_numbers = RegExp('(?=.*[0-9])');
 const password_special_symbols = RegExp('(?=.*[^A-Za-z0-9])');
 
-app.post('/sign_up', (req, res) => {
+app.post('/sign_up', async (req, res) => {
     const email = req.query.email;
     const username = req.query.username;
     const password = req.query.password;
@@ -39,10 +40,13 @@ app.post('/sign_up', (req, res) => {
         res.status(400).send("Password should contain special characters");
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
+    
     const user = {
         "email" : email,
         "username" : username,
-        "password" : password
+        "password" : hashedPassword
     }
 
     users.push(user);
